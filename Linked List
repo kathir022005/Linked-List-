@@ -1,0 +1,88 @@
+#include <stdio.h>
+#include <stdlib.h>
+struct Node {
+    int data;
+    struct Node* next;
+};
+struct Node* createNode(int data) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = data;
+    newNode->next = NULL;
+    return newNode;
+}
+void insertAtEnd(struct Node** head, int data) {
+    struct Node* newNode = createNode(data);
+    if (*head == NULL) {
+        *head = newNode;
+        return;
+    }
+    struct Node* temp = *head;
+    while (temp->next != NULL) {
+        temp = temp->next;
+    }
+    temp->next = newNode;
+}
+void printList(struct Node* head) {
+    struct Node* temp = head;
+    while (temp != NULL) {
+        printf("%d -> ", temp->data);
+        temp = temp->next;
+    }
+    printf("NULL\n");
+}
+struct Node* findMiddle(struct Node* head) {
+    struct Node* slow = head;
+    struct Node* fast = head;
+    while (fast != NULL && fast->next != NULL) {
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+    return slow;
+}
+void insertInMiddle(struct Node** head, int data) {
+    struct Node* newNode = createNode(data);
+    if (*head == NULL || (*head)->next == NULL) {
+        newNode->next = *head;
+        *head = newNode;
+        return;
+    }
+    struct Node* middle = findMiddle(*head);
+    newNode->next = middle->next;
+    middle->next = newNode;
+}
+void deleteMiddle(struct Node** head) {
+    if (*head == NULL || (*head)->next == NULL) {
+        return;
+    }
+    struct Node *prev = NULL, *slow = *head, *fast = *head;
+    while (fast != NULL && fast->next != NULL) {
+        prev = slow;
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+    if (prev != NULL) {
+        prev->next = slow->next;
+    } else {
+        *head = slow->next;
+    }
+    free(slow);
+}
+int main() {
+    struct Node* head = NULL;
+    insertAtEnd(&head, 1);
+    insertAtEnd(&head, 2);
+    insertAtEnd(&head, 3);
+    insertAtEnd(&head, 4);
+    insertAtEnd(&head, 5);
+    printf("Original List:\n");
+    printList(head);
+    // Insert in the middle
+    insertInMiddle(&head, 10);
+    printf("\nList after inserting in the middle:\n");
+    printList(head);
+    // Delete the middle node
+    deleteMiddle(&head);
+    printf("\nList after deleting the middle node:\n");
+    printList(head);
+    return 0;
+}
